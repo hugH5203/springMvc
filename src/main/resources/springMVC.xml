@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+    <!--开启注解扫描-->
+    <context:component-scan base-package="in2021winter.controller"/>  <!--要扫描的包即含有注解的类所在的包-->
+
+    <!--配置视图解析器-->
+    <bean id="internalResourceViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/"></property> <!--要访问的视图的文件所在目录-->
+        <property name="suffix" value=".jsp"></property>  <!--要访问的视图的后缀名-->
+    </bean>
+
+    <!--配置不被前端控制器拦截的静态资源-->
+<!--  mvc:resources标签意思为配置不过滤的资源
+      location元素表示webapp目录下的包下的所有文件
+      mapping元素表示以/static开头的所有请求路径，如/static/a 或者/static/a/b-->
+    <!-- <mvc:resources mapping="/css/**" location="/css/"/>
+     <mvc:resources mapping="/images/**" location="/images/"/>-->
+    <mvc:resources mapping="/js/**" location="/js/"/>
+
+    <!--配置拦截器-->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <!--要拦截的具体的方法的路径-->
+            <mvc:mapping path="/test/*"/>
+
+            <!--不要拦截的方法的路径-->
+           <!-- <mvc:exclude-mapping path="">-->
+
+            <!--配置拦截器对象，拦截器具体所在的类-->
+            <bean id="myInterceptor" class="in2021winter.controller.MyInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <!--配置异常处理器-->
+    <bean id="myExceptionResolver" class="in2021winter.controller.MyExceptionResolver"/>
+
+    <!--配置文件解析器，id必须是multipartResolver，这是springMVC指定了的，否则没用-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="10485760"></property>  <!--最大上传文件容量为：10M-->
+    </bean>
+
+    <!--开启springMVC框架对注解的支持-->
+    <!--在springMVC的各个组件中，处理器映射器，处理器适配器，和视图解析器称为三大组件，
+    该配置还自动加载前两个组件-->
+    <mvc:annotation-driven/>
+
+</beans>
